@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Flask</title>
+</head>
+<body>
+    <h1>Frontend Flask</h1>
+    <button id="gerarUsuarios">Gerar Usuários</button>
+    <div id="usuariosLista"></div>
+
+    <script>
+        document.getElementById("gerarUsuarios").addEventListener("click", function() {
+            // Realiza uma solicitação POST para a rota /gerar_usuarios
+            fetch("/gerar_usuarios", {
+                method: "POST",
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                } else {
+                    console.log(data.message);
+                    // Exibe a lista de usuários criados
+                    displayUsers(data.generated_users);
+                }
+            });
+        });
+
+        // Função para exibir a lista de usuários
+        function displayUsers(users) {
+            const usuariosLista = document.getElementById("usuariosLista");
+            usuariosLista.innerHTML = "<h2>Usuários Criados</h2>";
+
+            const ul = document.createElement("ul");
+            users.forEach(user => {
+                const li = document.createElement("li");
+                li.textContent = `ID: ${user.id}, Nome: ${user.nome}`;
+                ul.appendChild(li);
+            });
+
+            usuariosLista.appendChild(ul);
+        }
+
+        // Carrega a lista de usuários quando a página é carregada
+        window.addEventListener("load", function() {
+            fetch("/users")
+            .then(response => response.json())
+            .then(data => {
+                displayUsers(data);
+            });
+        });
+    </script>
+</body>
+</html>
