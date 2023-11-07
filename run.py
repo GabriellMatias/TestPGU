@@ -1,6 +1,8 @@
 from flask import Flask, Blueprint, render_template
-from app.database import db
+from uuid import uuid4
 
+from app.database import db
+from app.models import User
 #BluePrint Rotas
 from app.routes import users_bp
 
@@ -17,23 +19,39 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Configuração da senha secreta para segurança do app
 app.config['SECRET_KEY'] = 'TESTKEY'
 
+
+# Criando SEED temporaria
+def seed_database():
+    db.create_all()
+    try:
+        for i in range(10):
+            user = User(str(uuid4()), f'User Numero {i+1}')
+            db.session.add(user)
+        db.session.commit()
+    except Exception as e:
+        print(f"Ocorreu um erro ao gerar a seed {e}")
+
+
+
 # Iniciando DB
 db.init_app(app)
 
 with app.app_context():
-    # # Executar operação que requer o contexto da aplicação Flask
     db.create_all()
+    #Seed temporario
+    #seed_database()
+
+#   ROTA RAIZ
+bp_index= Blueprint("main", __name__, static_folder="static", template_folder="./template")
+@bp_index.route('/')
+def index():
+    return render_template('index.html', title='Gerar Usuarios')
+
 
 
 # Config Rotas
 app.register_blueprint(users_bp)
-
-#   ROTA RAIZ
-bp_index= Blueprint("main", __name__, static_folder="/static", template_folder="./templates")
-@bp_index.route('/')
-def index():
-    return render_template('users/index.html', title='Gerar Usuarios')
-
+app.register_blueprint(bp_index)
 
 ### Adicionais que poderiam ser implantados ###
 

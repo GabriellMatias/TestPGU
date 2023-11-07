@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Usuários</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        #usuariosLista {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gerador de Usuários</h1>
+    <button id="gerarUsuarios">Gerar Usuários</button>
+    <div id="usuariosLista">
+        <button id="verUsuarios">Ver Usuários Gerados</button>
+    </div>
+
+    <script>
+        document.getElementById("gerarUsuarios").addEventListener("click", function() {
+            
+            fetch("/gerar_usuarios", {
+                method: "POST",
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                } else {
+                    console.log(data.message);
+                    console.log(data);
+                   
+                    document.getElementById("usuariosLista").style.display = "block";
+                }
+            });
+        });
+
+        document.getElementById("verUsuarios").addEventListener("click", function() {
+            // Redireciona para a página de lista de usuários
+            window.location.href = "/list_users";
+        });
+    </script>
+</body>
+</html>
